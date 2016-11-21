@@ -1,0 +1,227 @@
+package automation.projects.keywordframework.utility;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import automation.projects.keywordframework.DriverScript;
+import automation.projects.keywordframework.config.Constants;
+import automation.projects.keywordframework.utility.*;
+
+
+import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.*;
+
+public class ExcelUtils 
+{
+	private static XSSFSheet ExcelWSheet;
+	private static XSSFWorkbook ExcelWBook;
+	private static XSSFCell Cell;
+
+	//This method is to set the File path and to open the Excel file
+	//Pass Excel Path and SheetName as Arguments to this method
+	public static void setExcelFile(String Path) throws Exception 
+	{
+		try
+		{
+			FileInputStream ExcelFile = new FileInputStream(Path);
+			ExcelWBook = new XSSFWorkbook(ExcelFile);
+		}
+		catch (Exception e)
+		{
+			Log.error("CError in function ExcelUtils.setExcelFile: "+e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+
+	//This method is to read the test data from the Excel cell
+	//In this we are passing parameters/arguments as Row Num and Col Num
+	public static String getCellData(int RowNum, int ColNum, String SheetName) throws Exception
+	{
+		try
+		{
+			ExcelWSheet = ExcelWBook.getSheet(SheetName);
+			Cell = ExcelWSheet.getRow(RowNum).getCell(ColNum);
+
+			try
+			{
+				String CellData = Cell.getStringCellValue();
+				return CellData;
+			}
+			catch(Exception e)
+			{
+				String CellData = Cell.getRawValue();
+				return CellData;
+			}
+		}
+		catch (Exception e)
+		{
+			Log.error("Not able to read cell data "+e.getMessage());
+			DriverScript.bResult = false;
+			return"";
+		}
+	}
+
+	//This method is to get the row count used of the excel sheet
+	public static int getRowCount(String SheetName)
+	{
+		try
+		{
+			ExcelWSheet = ExcelWBook.getSheet(SheetName);
+			int number = ExcelWSheet.getLastRowNum() + 1;
+			return number;
+		}
+		catch(Exception e)
+		{
+			Log.error("Error in function ExcelUtils.getRowCount: "+e.getMessage());
+			DriverScript.bResult = false;
+			return 0;
+		}
+	}
+
+	//This method is to get the Row number of the test case
+	//This methods takes three arguments(Test Case name , Column Number & Sheet name)
+	public static int getRowContains(String sTestCaseName, int colNum,String SheetName) throws Exception
+	{
+		try
+		{
+			int i;
+			ExcelWSheet = ExcelWBook.getSheet(SheetName);
+			int rowCount = ExcelUtils.getRowCount(SheetName);
+			for (i=0 ; i<rowCount; i++)
+			{
+				System.out.println("getRowContains i = "+i);
+				if(!ExcelUtils.getCellData(i,colNum,SheetName).isEmpty())
+				{
+					if  (ExcelUtils.getCellData(i,colNum,SheetName).equalsIgnoreCase(sTestCaseName))
+					{
+						System.out.println("getRowContains sTestCaseName = "+sTestCaseName +" SheetName = "+SheetName);
+						break;
+					}
+				}
+			}
+			return i;
+		}
+		catch(Exception e)
+		{
+			Log.error("Error in function ExcelUtils.getRowContains: "+e.getMessage());
+			DriverScript.bResult = false;
+			return 0;
+		}
+	}
+
+	//This method is to get the count of the test steps of test case
+	//This method takes three arguments (Sheet name, Test Case Id & Test case row number)
+	public static int getTestStepsCount(String SheetName, String sTestCaseID, int iTestCaseStart) throws Exception
+	{
+		try
+		{
+			for(int i=iTestCaseStart; i<=ExcelUtils.getRowCount(SheetName); i++)
+			{
+				if(!sTestCaseID.equals(ExcelUtils.getCellData(i, Constants.Col_TestCaseID, SheetName)))
+				{
+					int number = i;
+					System.out.println("number = "+number);
+					return number;
+				}
+			}
+			ExcelWSheet = ExcelWBook.getSheet(SheetName);
+			int number=ExcelWSheet.getLastRowNum()+1;
+			System.out.println("number last= "+number);
+
+			return number;
+		}
+		catch(Exception e)
+		{
+			Log.info("Error in function ExcelUtils.getTestStepsCount: " + e.getMessage());
+			DriverScript.bResult = false;
+			return 0;
+		}
+	}
+
+
+	@SuppressWarnings("static-access")
+	public static void setCellData(String Result,  int RowNum, int ColNum, String SheetName) throws Exception    
+	{
+		try
+		{
+			ExcelWSheet = ExcelWBook.getSheet(SheetName);
+			XSSFRow Row = ExcelWSheet.getRow(RowNum);
+			Cell = Row.getCell(ColNum, Row.RETURN_BLANK_AS_NULL);
+
+			if (Cell == null) 
+			{
+				Cell = Row.createCell(ColNum);
+			}
+			Cell.setCellValue(Result);
+
+			FileOutputStream fileOut = new FileOutputStream(Constants.Path_TestData);
+			ExcelWBook.write(fileOut);
+			fileOut.flush();
+			fileOut.close();
+			ExcelWBook = new XSSFWorkbook(new FileInputStream(Constants.Path_TestData));
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to set value in a cell " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+
+	@SuppressWarnings("static-access")
+	public static void setHyperLink(String Link,  int RowNum, int ColNum, String SheetName) throws Exception 
+	{
+		try
+		{
+			ExcelWSheet = ExcelWBook.getSheet(SheetName);
+			XSSFRow Row = ExcelWSheet.getRow(RowNum);
+			Cell = Row.getCell(ColNum, Row.RETURN_BLANK_AS_NULL);
+			if (Cell == null) 
+			{
+				Cell = Row.createCell(ColNum);
+			} 
+
+			XSSFCellStyle hlinkstyle = ExcelWBook.createCellStyle();
+			XSSFFont hlinkfont = ExcelWBook.createFont();
+			hlinkfont.setUnderline(XSSFFont.U_SINGLE);
+			hlinkfont.setColor(HSSFColor.BLUE.index);
+			hlinkstyle.setFont(hlinkfont);
+
+			XSSFCreationHelper helper = ExcelWBook.getCreationHelper();
+			XSSFHyperlink file_link = helper.createHyperlink(Hyperlink.LINK_FILE);
+			file_link.setAddress("file:///"+Link);
+			Cell.setHyperlink(file_link);
+
+			Cell.setCellValue("Error Screenshot");  
+			Cell.setCellStyle(hlinkstyle);
+
+			FileOutputStream fileOut = new FileOutputStream(Constants.Path_TestData);
+			ExcelWBook.write(fileOut);
+			fileOut.flush();
+			fileOut.close();
+			ExcelWBook = new XSSFWorkbook(new FileInputStream(Constants.Path_TestData));
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to create HyperLink to error screenshot " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+	
+	public static String setScreenshotinExcel(int RowNum, int ColNum, String SheetName) throws Exception
+	{
+		String ErrorScreenshot = null;
+		try 
+		{
+			ErrorScreenshot = GeneralUtils.getScreenshot() ;
+			ExcelUtils.setHyperLink(ErrorScreenshot,RowNum,ColNum,SheetName);
+		}
+		catch (IOException e)
+		{
+			Log.info("Not able to link error screenshot in report " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+		return ErrorScreenshot;
+	}
+}

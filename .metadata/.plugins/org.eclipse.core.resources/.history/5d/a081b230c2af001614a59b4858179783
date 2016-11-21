@@ -1,0 +1,15 @@
+package com.automation.servicenow;
+
+import org.testng.annotations.Test;
+
+public class DemoMavenTest {
+	
+	@Test
+	public static void testDemoMaven(){
+	
+		System.out.println("welcome to Maven");
+		
+
+	}
+
+}

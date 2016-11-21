@@ -1,0 +1,49 @@
+package com.automation.servicenow.config;
+
+import java.util.List;
+
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.*;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+
+public class Test1 {
+
+public static void main(String[] args) {
+    String baseUrl = "http://newtours.demoaut.com/";
+   // System.setProperty("webdriver.gecko.driver", "C:\\Workspace_e\\geckodriver.exe");
+    //WebDriver driver = new FirefoxDriver();
+    System.setProperty("webdriver.ie.driver", "C:\\SeleniumSNExport\\drivers_ie_chrome\\ie32bit\\IEDriverServer.exe");
+	WebDriver driver = new InternetExplorerDriver();
+	
+    String underConsTitle = "Under Construction: Mercury Tours";
+    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
+    driver.get(baseUrl);
+    List<WebElement> linkElements = driver.findElements(By.tagName("a"));
+    String[] linkTexts = new String[linkElements.size()];
+    int i = 0;
+
+    //extract the link texts of each link element
+    for (WebElement e : linkElements) {
+        linkTexts[i] = e.getText();
+        i++;
+    }
+
+    //test each link
+    for (String t : linkTexts) {
+        driver.findElement(By.linkText(t)).click();
+        if (driver.getTitle().equals(underConsTitle)) {
+            System.out.println("\"" + t + "\""
+                    + " is under construction.");
+        } else {
+            System.out.println("\"" + t + "\""
+                    + " is working.");
+        }
+        driver.navigate().back();
+    }
+    driver.quit();
+}
+
+}

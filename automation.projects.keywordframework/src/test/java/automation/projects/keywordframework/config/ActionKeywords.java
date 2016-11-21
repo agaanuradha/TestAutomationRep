@@ -1,0 +1,256 @@
+package automation.projects.keywordframework.config;
+
+//import java.util.concurrent.TimeUnit;
+
+import java.util.List;
+
+import org.openqa.selenium.*;
+//import org.openqa.selenium.ie.*;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+//import org.openqa.selenium.chrome.ChromeDriver;
+//import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import automation.projects.keywordframework.utility.*;
+import automation.projects.keywordframework.*;
+
+
+public class ActionKeywords 
+{
+	public static WebDriver driver;
+	public static JavascriptExecutor js;
+
+	public static void click(String object, String data)
+	{
+		try
+		{
+			Log.info("Clicking on Webelement "+ object);
+			driver.findElement(By.xpath(JsonUtils.readORJson(object))).click();
+
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to click on Webelement "+ object +" --- " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+
+
+	public static void clickLink(String object, String data)
+	{
+		try
+		{
+			Log.info("Clicking on Link"+ data);
+			driver.findElement(By.linkText(data));
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to click on Webelement "+ object +" --- " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+
+
+	public static void clickLinkByClass(String object, String data)
+	{
+		try
+		{
+			Log.info("Clicking on Link "+ data + " with class "+object);
+			int flag = 0;
+			List<WebElement> category = driver.findElements(By.className(JsonUtils.readORJson(object)));
+
+			int i;
+			for (i = 0; i <= category.size() - 1; i++) 
+			{
+				if (category.get(i).getText().contains(data)) 
+				{
+					category.get(i).click();
+					flag = 1;
+					break;
+				}
+			}
+			if (flag == 0)
+			{
+				Log.info("Not able to click on Webelement "+data);
+				DriverScript.bResult = false;
+			}
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to click on Webelement "+ object +" --- " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+
+
+	public static void closeBrowser()
+	{
+		try
+		{
+			Log.info("Closing the browser");
+			driver.quit();
+		}
+		catch(Exception e)
+		{
+			Log.error("Not able to Close the Browser --- " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+
+
+	public static void input(String object, String data)
+	{
+		try
+		{
+			Log.info("Input "+ data);
+			driver.findElement(By.xpath(JsonUtils.readORJson(object))).click();
+			System.out.println("hellooo");
+			
+			System.out.println("text data"+ data);
+			driver.findElement(By.xpath(JsonUtils.readORJson(object))).sendKeys(data);
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to input value "+ data + " in Webelement " +object+ " --- " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+
+	public static void select(String object, String data)
+	{
+		try
+		{
+			Log.info("Select "+ data);
+
+			Select dropdown= new Select(driver.findElement(By.xpath(JsonUtils.readORJson(object))));
+			dropdown.selectByVisibleText(data);
+	
+		WebElement select = driver.findElement(By.xpath(JsonUtils.readORJson(object)));
+		List<WebElement> options = select.findElements(By.tagName("option"));
+
+			for (WebElement option : options) {
+
+			if(data.equals(option.getText().trim()))
+				option.click();
+			option.sendKeys(Keys.ENTER);	
+			}
+			
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to select value "+ data + " in Webelement " +object+ " --- " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+
+	public static void openApplication(String object, String data)
+	{	
+		try
+		{
+			Log.info("Logging into the Application");
+			System.out.println(Constants.URL);
+			driver.get(Constants.URL);
+			System.out.println("After Launch");
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to log into the application --- " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+
+
+	public static void openBrowser(String object, String data)
+	{	
+		try
+		{
+			Log.info("Opening Browser");
+
+
+			/*ChromeOptions options = new ChromeOptions();
+						options.addArguments("chrome.switches","--disable-extensions");
+						System.setProperty("webdriver.chrome.driver",Constants.Path_ChromeDriver);
+						driver = new ChromeDriver(options); 
+						driver.manage().window().maximize();*/
+
+			System.setProperty("webdriver.ie.driver", "C:\\SeleniumSNExport\\drivers_ie_chrome\\ie32bit\\IEDriverServer.exe");
+			driver = new InternetExplorerDriver();
+
+			if (driver instanceof JavascriptExecutor) 
+			{
+				js = (JavascriptExecutor)driver;
+			} 
+			//  driver.get(Constants.URL);
+
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to open Browser --- " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+
+
+	public static void switchToNoFrame(String object, String data) throws Exception
+	{
+		try
+		{
+			Log.info("Switiching to No frame "+object);
+			//driver.switchTo().frame(JsonUtils.readORJson(object));
+			driver.switchTo().defaultContent();
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to switch to no frame "+ object +" --- " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+
+
+	public static void waitForElement(String object, String data) throws Exception
+	{
+		try
+		{
+			Log.info("Waiting for element "+object);
+			WebDriverWait wait = new WebDriverWait(driver, 60);
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath(JsonUtils.readORJson(object))));
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to wait for element "+ object +" --- " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+
+
+	public static void waitForFrame(String object, String data) throws Exception
+	{
+		try
+		{
+			Log.info("Waiting for frame "+object);
+			WebDriverWait wait = new WebDriverWait(driver, 60);
+			wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(JsonUtils.readORJson(object))); 
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to wait for frame "+ object +" --- " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+
+
+	public static void waitForTime(long object, String data) throws Exception
+	{
+		try
+		{
+			Log.info("Waiting for "+object +" seconds");
+			Thread.sleep(object);
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to wait for "+ object +"secs --- " + e.getMessage());
+			DriverScript.bResult = false;
+		}
+	}
+}

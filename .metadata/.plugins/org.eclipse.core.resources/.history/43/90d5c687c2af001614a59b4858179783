@@ -1,0 +1,114 @@
+package automation.projects.keywordframework.config;
+
+import org.openqa.selenium.*;
+import automation.projects.keywordframework.utility.*;
+import automation.projects.keywordframework.config.*;
+import automation.projects.keywordframework.*;
+
+public class Assertions 
+{
+
+	public static void assert_Data(String object, String data)
+	{
+		try
+		{
+			Log.info("Assertion: Validating that a specified value exists in a field");
+
+			String Value = null;
+			ActionKeywords.driver.findElement(By.xpath(JsonUtils.readORJson(object))).click();
+			Value = ActionKeywords.driver.findElement(By.xpath(JsonUtils.readORJson(object))).getText();
+					
+			if(Value.equalsIgnoreCase(data))
+			{
+				DriverScript.bAssertResult = true;
+			}
+			else
+			{
+				DriverScript.bAssertResult = false;
+			}
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to Validate value "+ data + " in Webelement " +object+ " --- " + e.getMessage());
+			DriverScript.bAssertResult = false;
+		}
+	}
+
+	public static void assert_isAutoFilled(String object, String data)
+	{
+		try
+		{
+			Log.info("Assertion: Validating a value exists in a field");
+			String Value = null;
+			//ActionKeywords.driver.findElement(By.xpath(JsonUtils.readORJson(object))).click();
+			//Value = ActionKeywords.driver.findElement(By.xpath(JsonUtils.readORJson(object))).getText();
+			Value = ActionKeywords.driver.findElement(By.xpath(JsonUtils.readORJson(object))).getAttribute("value");
+			
+			try
+			{
+				if(Value.length() > 0)
+				{
+					DriverScript.bAssertResult = true;
+				}
+				else
+				{
+					DriverScript.bAssertResult = false;
+				}
+			}
+			catch(NullPointerException e)
+			{
+				DriverScript.bAssertResult = false;
+			}
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to Validate value "+ data + " in Webelement " +object+ " --- " + e.getMessage());
+			DriverScript.bAssertResult = false;
+		}
+	}
+
+	public static void assert_isDisabled(String object, String data) throws Exception
+	{
+		try
+		{
+			Log.info("Checking if "+object +" is disabled");
+			String disable = ActionKeywords.driver.findElement(By.xpath(JsonUtils.readORJson(object))).getAttribute("disabled");
+			if(disable.equalsIgnoreCase("true"))
+			{
+				DriverScript.bAssertResult = true;
+			}
+			else
+			{
+				DriverScript.bAssertResult = false;
+			}
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to check whether "+ object +" is disabled or not --- " + e.getMessage());
+			DriverScript.bAssertResult = false;
+		}
+	}
+
+	public static void assert_isEnabled(String object, String data) throws Exception
+	{
+		try
+		{
+			Log.info("Checking if "+object +" is enabled");
+			String disable = ActionKeywords.driver.findElement(By.xpath(JsonUtils.readORJson(object))).getAttribute("disabled");
+			try
+			{
+				disable.length();
+				DriverScript.bAssertResult = false;
+			}
+			catch(NullPointerException e)
+			{
+				DriverScript.bAssertResult = true;
+			}
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to check whether "+ object +" is enabled or not --- " + e.getMessage());
+			DriverScript.bAssertResult = false;
+		}
+	}
+}
