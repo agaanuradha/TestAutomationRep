@@ -3,8 +3,11 @@
 "btn_CustomerLogin": "//button[text()='Customer Login']"
 "select_YourName": "//select[@id='userSelect']"
 "btn_Login": "//button[text()='Login']"
+"btn_Transactions": "//button[contains(text(),'Transactions')]"
+"btn_Reset": "//button[text()='Reset']"
 "span_Welcom":"//strong[contains(text(),'Welcome')]/span[@class='fontBig ng-binding']"
 "btn_Deposit":"//button[contains(text(),'Deposit')]"
 "txt_DepositAmount":"//form[@ng-submit='deposit()']/div/input[@type='number']"
 "btn_DepositSubmit":"//button[@type='submit'][contains(text(),'Deposit')]"
+"tbl_Transactions": "//table[@class='table table-bordered table-striped']"
 }

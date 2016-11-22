@@ -3,7 +3,7 @@
 <suite name="Suite">
   <test name="Test">
     <classes>
-      <class name="com.automation.servicenow.DriverScript"/>
+      <class name="automation.projects.keywordframework.DriverScript"/>
     </classes>
   </test> <!-- Test -->
 </suite> <!-- Suite -->

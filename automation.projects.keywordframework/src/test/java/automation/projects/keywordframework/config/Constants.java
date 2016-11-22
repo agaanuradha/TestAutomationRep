@@ -4,13 +4,15 @@ import automation.projects.keywordframework.utility.*;;
 
 public class Constants 
 {
-	public static final String Parent_SourcePath =" ";
+	public static final String Parent_SourcePath ="C:\\TestWS\\automation.projects.keywordframework\\src\\test\\java\\automation\\projects\\keywordframework\\";
+	//public static final String URL = "HTTP://ENTERPRISE.DEMO.ORANGEHRMLIVE.COM/";
 	public static final String URL = "http://www.globalsqa.com/angularJs-protractor/BankingProject/#/login";
 	public static final String Path_TestData = Parent_SourcePath+ "dataEngine/DataEngine.xlsx";
 	public static final String File_TestData = "DataEngine.xlsx";
 	public static final String Path_JSON_ObjectRepositry=Parent_SourcePath+"config/ObjectRepositoryXYZ.json";
     public static final String Path_ChromeDriver = "C:/Selenium/drivers_ie_chrome/chromedriver.exe";
-	public static final String Path_BuildExecutionFolder = "";
+    public static final String Path_IEDriver = "C:\\FunctionalTestAutomation\\SwSetup\\Selenium\\IEDriver32\\IEDriverServer.exe";
+	public static final String Path_BuildExecutionFolder = "C://BuildExecutionLogs//TestWS//";
 	public static final String todayDate = GeneralUtils.getCurrentDate();
 	public static final String Path_ErrorScreenshots = Path_BuildExecutionFolder + todayDate + "/";
 	public static final String Path_TestReportFolder = Path_BuildExecutionFolder + todayDate + "/";

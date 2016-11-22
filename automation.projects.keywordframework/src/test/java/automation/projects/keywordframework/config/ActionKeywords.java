@@ -19,7 +19,7 @@ import automation.projects.keywordframework.*;
 public class ActionKeywords 
 {
 	public static WebDriver driver;
-	public static JavascriptExecutor js;
+
 
 	public static void click(String object, String data)
 	{
@@ -173,15 +173,10 @@ public class ActionKeywords
 						System.setProperty("webdriver.chrome.driver",Constants.Path_ChromeDriver);
 						driver = new ChromeDriver(options); 
 						driver.manage().window().maximize();*/
-
-			System.setProperty("webdriver.ie.driver", "C:\\SeleniumSNExport\\drivers_ie_chrome\\ie32bit\\IEDriverServer.exe");
+            System.out.println("hello path " + Constants.Path_IEDriver);
+			System.setProperty("webdriver.ie.driver", "C:\\FunctionalTestAutomation\\SwSetup\\Selenium\\IEDriver32\\IEDriverServer.exe");
 			driver = new InternetExplorerDriver();
-
-			if (driver instanceof JavascriptExecutor) 
-			{
-				js = (JavascriptExecutor)driver;
-			} 
-			//  driver.get(Constants.URL);
+			
 
 		}
 		catch(Exception e)

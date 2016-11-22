@@ -2,10 +2,7 @@ package automation.projects.keywordframework;
 
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-
-import java.io.FileInputStream;
 import java.lang.reflect.Method;
-import java.util.Properties;
 import org.apache.log4j.xml.DOMConfigurator;
 import automation.projects.keywordframework.config.*;
 import automation.projects.keywordframework.utility.*;
@@ -13,10 +10,8 @@ import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
 import com.relevantcodes.extentreports.NetworkMode;
-import automation.projects.keywordframework.*;
 
-public class DriverScript 
-{
+public class DriverScript {
 	public static ActionKeywords actionKeywords;
 	public static Method method[];
 	public static boolean bResult;
@@ -37,256 +32,228 @@ public class DriverScript
 	private static ExtentReports extent;
 	private static ExtentTest Test;
 
-	
-	public DriverScript() throws NoSuchMethodException, SecurityException
-	{	   
+	public DriverScript() throws NoSuchMethodException, SecurityException {
 		actionKeywords = new ActionKeywords();
 		method = actionKeywords.getClass().getDeclaredMethods();
 		assertions = new Assertions();
 		method_assert = assertions.getClass().getDeclaredMethods();
 	}
 
-
 	@BeforeTest
-	public void beforeTest()
-	{
-		String Path_DataEngine = Constants.Path_TestData;   
+	public void beforeTest() {
+		String Path_DataEngine = Constants.Path_TestData;
 		DOMConfigurator.configure("log4j.xml");
-		//System.setProperty("org.uncommons.reportng.escape-output", "false");
-		try 
-		{
+		// System.setProperty("org.uncommons.reportng.escape-output", "false");
+		try {
 			ExcelUtils.setExcelFile(Path_DataEngine);
 			extent = new ExtentReports(Constants.Path_TestReportFolder + "Report.html", true, NetworkMode.OFFLINE);
-		} 
-		catch (Exception e) 
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	
-	/*@SuppressWarnings("static-access")
-	@AfterMethod
-	public void afterMethod()
-	{
-		actionKeywords.driver.quit();
-	}*/
+	/*
+	 * @SuppressWarnings("static-access")
+	 * 
+	 * @AfterMethod public void afterMethod() { actionKeywords.driver.quit(); }
+	 */
 
-	
 	@Test
-	public void mainDriverScript()
-	{
-		try 
-		{
-			//new DriverScript();  
+	public void mainDriverScript() {
+		try {
+			// new DriverScript();
 			DriverScript startEngine = new DriverScript();
 			startEngine.execute_TestCase();
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void execute_TestCase() throws Exception 
-	{
+	private void execute_TestCase() throws Exception {
 		int iTotalTestCases = ExcelUtils.getRowCount(Constants.Sheet_TestCases);
 
-		for(int iTestcase=1; iTestcase<=iTotalTestCases; iTestcase++)
-		{
+		for (int iTestcase = 1; iTestcase <= iTotalTestCases; iTestcase++) {
 			bResult = true;
 			bAssertResult = true;
-			sTestCaseID = ExcelUtils.getCellData(iTestcase, Constants.Col_TestCaseID, Constants.Sheet_TestCases); 
-			sRunMode = ExcelUtils.getCellData(iTestcase, Constants.Col_RunMode,Constants.Sheet_TestCases);
-			sTestCaseDescription  = ExcelUtils.getCellData(iTestcase, Constants.Col_TestCaseDescription,Constants.Sheet_TestCases);
-			
-			if (sRunMode.equals("Yes"))
-			{
+			sTestCaseID = ExcelUtils.getCellData(iTestcase, Constants.Col_TestCaseID, Constants.Sheet_TestCases);
+			sRunMode = ExcelUtils.getCellData(iTestcase, Constants.Col_RunMode, Constants.Sheet_TestCases);
+			sTestCaseDescription = ExcelUtils.getCellData(iTestcase, Constants.Col_TestCaseDescription,
+					Constants.Sheet_TestCases);
+
+			if (sRunMode.equals("Yes")) {
 				iTestStep = ExcelUtils.getRowContains(sTestCaseID, Constants.Col_TestCaseID, sTestCaseID);
 				iTestLastStep = ExcelUtils.getTestStepsCount(sTestCaseID, sTestCaseID, iTestStep);
 				Log.startTestCase(sTestCaseID);
-				bResult=true;
-				
+				bResult = true;
+
 				Test = extent.startTest(sTestCaseID, sTestCaseDescription);
 				extent.endTest(Test);
-				
-				for (; iTestStep<=iTestLastStep; iTestStep++)
-				{
-					sActionKeyword = ExcelUtils.getCellData(iTestStep, Constants.Col_ActionKeyword,sTestCaseID);
+
+				for (; iTestStep <= iTestLastStep; iTestStep++) {
+					sActionKeyword = ExcelUtils.getCellData(iTestStep, Constants.Col_ActionKeyword, sTestCaseID);
 					sPageObject = ExcelUtils.getCellData(iTestStep, Constants.Col_PageObject, sTestCaseID);
 					sData = ExcelUtils.getCellData(iTestStep, Constants.Col_DataSet, sTestCaseID);
-					sDescription=ExcelUtils.getCellData(iTestStep, Constants.Col_TestStepDescription, sTestCaseID);
-					
-					//Test = extent.
-					//Test = extent.startTest(sTestCaseID, sDescription);
-					//extent.endTest(Test);
-					
-					System.out.println("sActionKeyword = "+sActionKeyword);
+					sDescription = ExcelUtils.getCellData(iTestStep, Constants.Col_TestStepDescription, sTestCaseID);
 
-					if(sActionKeyword.equals("N/A"))
-					{
+					// Test = extent.
+					// Test = extent.startTest(sTestCaseID, sDescription);
+					// extent.endTest(Test);
+
+					System.out.println("sActionKeyword = " + sActionKeyword);
+
+					if (sActionKeyword.equals("N/A")) {
 						sActionKeyword = "";
 					}
 
-					if(sPageObject.equals("N/A"))
-					{
+					if (sPageObject.equals("N/A")) {
 						sPageObject = "";
 					}
 
-					if(sData.equals("N/A"))
-					{
+					if (sData.equals("N/A")) {
 						sData = "";
 					}
 
-					if(sActionKeyword.contains("assert_"))
-					{
+					if (sActionKeyword.contains("assert_")) {
 						System.out.println("if(sActionKeyword.contains(assert_))");
 						execute_Assertions();
-					}
-					else
-					{
+					} else {
 						execute_Actions();
 					}
 
-					if(bResult==false)
-					{
-						ExcelUtils.setCellData(Constants.KEYWORD_FAIL,iTestcase,Constants.Col_Result,Constants.Sheet_TestCases);
+					if (bResult == false) {
+						ExcelUtils.setCellData(Constants.KEYWORD_FAIL, iTestcase, Constants.Col_Result,
+								Constants.Sheet_TestCases);
 						Log.endTestCase(sTestCaseID);
+
+					
+						 screenshotPath =
+						ExcelUtils.setScreenshotinExcel(iTestStep,
+						 Constants.Col_Screenshot, sTestCaseID);
+						 screenshotPath = screenshotPath.replace("//", "/");
+						  screenshotLink = "file:///"+ screenshotPath;
 						
-					/*	screenshotPath = ExcelUtils.setScreenshotinExcel(iTestStep, Constants.Col_Screenshot, sTestCaseID);
-						screenshotPath = screenshotPath.replace("//", "/");
-						screenshotLink = "file:///"+ screenshotPath;*/
-						
-						//log-pass status
-						Test.log(LogStatus.FAIL,sDescription, "Fail");
-						
+
+						// log-pass status
+						Test.log(LogStatus.FAIL, sDescription, "Fail");
+
 						// report with snapshot
 						String img = Test.addScreenCapture(screenshotPath);
-						Test.log(LogStatus.INFO, "Snapshot Attached"+img);
-					    
+						Test.log(LogStatus.INFO, "Snapshot Attached" + img);
+
 						// writing everything to document
 						extent.flush();
-						
+
 						break;
 					}
 				}
-				
 
-				if(bResult==true)
-				{
-					ExcelUtils.setCellData(Constants.KEYWORD_PASS,iTestcase,Constants.Col_Result,Constants.Sheet_TestCases);
-					Log.endTestCase(sTestCaseID);	
-					
-					//log-pass status
-					Test.log(LogStatus.PASS, sDescription,"Pass");
-					
+				if (bResult == true) {
+					ExcelUtils.setCellData(Constants.KEYWORD_PASS, iTestcase, Constants.Col_Result,
+							Constants.Sheet_TestCases);
+					Log.endTestCase(sTestCaseID);
+
+					// log-pass status
+					Test.log(LogStatus.PASS, sDescription, "Pass");
+
 					// report with snapshot
 					String img = Test.addScreenCapture(screenshotPath);
-					Test.log(LogStatus.INFO, "Snapshot Attached"+img);
-				    
+					Test.log(LogStatus.INFO, "Snapshot Attached" + img);
+
 					// writing everything to document
 					extent.flush();
 				}
 			}
 		}
-		
+
 	}
 
-	private static void execute_Actions() throws Exception 
-	{
-		for(int i = 0;i < method.length;i++)
-		{
-			if(method[i].getName().equals(sActionKeyword))
-			{
-				method[i].invoke(sActionKeyword,sPageObject,sData);
+	private static void execute_Actions() throws Exception {
+		for (int i = 0; i < method.length; i++) {
+			if (method[i].getName().equals(sActionKeyword)) {
+				method[i].invoke(sActionKeyword, sPageObject, sData);
 
-				if(bResult==true)
-				{
-					ExcelUtils.setCellData(Constants.KEYWORD_PASS, iTestStep, Constants.Col_TestStepResult, sTestCaseID);
+				if (bResult == true) {
+					ExcelUtils.setCellData(Constants.KEYWORD_PASS, iTestStep, Constants.Col_TestStepResult,
+							sTestCaseID);
 					screenshotPath = ExcelUtils.setScreenshotinExcel(iTestStep, Constants.Col_Screenshot, sTestCaseID);
 					screenshotPath = screenshotPath.replace("//", "/");
-					screenshotLink = "file:///"+ screenshotPath;
-					
-					//log-pass status
-					Test.log(LogStatus.PASS,sDescription, "Pass");
-					
+					screenshotLink = "file:///" + screenshotPath;
+
+					// log-pass status
+					Test.log(LogStatus.PASS, sDescription, "Pass");
+
 					// report with snapshot
 					String img = Test.addScreenCapture(screenshotPath);
-					Test.log(LogStatus.INFO, "Snapshot Attached"+img);
-				    
+					Test.log(LogStatus.INFO, "Snapshot Attached" + img);
+
 					// writing everything to document
 					extent.flush();
-					
+
 					break;
-				}
-				else
-				{
-					ExcelUtils.setCellData(Constants.KEYWORD_FAIL, iTestStep, Constants.Col_TestStepResult, sTestCaseID);
+				} else {
+					ExcelUtils.setCellData(Constants.KEYWORD_FAIL, iTestStep, Constants.Col_TestStepResult,
+							sTestCaseID);
 					screenshotPath = ExcelUtils.setScreenshotinExcel(iTestStep, Constants.Col_Screenshot, sTestCaseID);
 					screenshotPath = screenshotPath.replace("//", "/");
-					screenshotLink = "file:///"+ screenshotPath;
-					//ActionKeywords.closeBrowser();
-					
-					//log-pass status
-					Test.log(LogStatus.FAIL,sDescription, "Fail");
-					
+					screenshotLink = "file:///" + screenshotPath;
+					// ActionKeywords.closeBrowser();
+
+					// log-pass status
+					Test.log(LogStatus.FAIL, sDescription, "Fail");
+
 					// report with snapshot
 					String img = Test.addScreenCapture(screenshotPath);
-					Test.log(LogStatus.INFO, "Snapshot Attached"+img);
-				    
+					Test.log(LogStatus.INFO, "Snapshot Attached" + img);
+
 					// writing everything to document
 					extent.flush();
-					
+
 					break;
 				}
 			}
 		}
 	}
 
-	private static void execute_Assertions() throws Exception 
-	{
-		for(int i = 0;i < method_assert.length;i++)
-		{
-			if(method_assert[i].getName().equals(sActionKeyword))
-			{
-				method_assert[i].invoke(sActionKeyword,sPageObject,sData);
-				if(bAssertResult==true)
-				{
-					ExcelUtils.setCellData(Constants.KEYWORD_PASS, iTestStep, Constants.Col_TestStepResult, sTestCaseID);
+	private static void execute_Assertions() throws Exception {
+		for (int i = 0; i < method_assert.length; i++) {
+			if (method_assert[i].getName().equals(sActionKeyword)) {
+				method_assert[i].invoke(sActionKeyword, sPageObject, sData);
+				if (bAssertResult == true) {
+					ExcelUtils.setCellData(Constants.KEYWORD_PASS, iTestStep, Constants.Col_TestStepResult,
+							sTestCaseID);
 					screenshotPath = ExcelUtils.setScreenshotinExcel(iTestStep, Constants.Col_Screenshot, sTestCaseID);
 					screenshotPath = screenshotPath.replace("//", "/");
-					screenshotLink = "file:///"+ screenshotPath;
-					
-					//log-pass status
+					screenshotLink = "file:///" + screenshotPath;
+
+					// log-pass status
 					Test.log(LogStatus.PASS, "Passssss");
-					
+
 					// report with snapshot
 					String img = Test.addScreenCapture(screenshotPath);
-					Test.log(LogStatus.INFO, "Snapshot Attached"+img);
-				    
+					Test.log(LogStatus.INFO, "Snapshot Attached" + img);
+
 					// writing everything to document
 					extent.flush();
-					
+
 					break;
-				}
-				else
-				{
-					ExcelUtils.setCellData(Constants.KEYWORD_FAIL, iTestStep, Constants.Col_TestStepResult, sTestCaseID);
+				} else {
+					ExcelUtils.setCellData(Constants.KEYWORD_FAIL, iTestStep, Constants.Col_TestStepResult,
+							sTestCaseID);
 					screenshotPath = ExcelUtils.setScreenshotinExcel(iTestStep, Constants.Col_Screenshot, sTestCaseID);
 					screenshotPath = screenshotPath.replace("//", "/");
-					screenshotLink = "file:///"+ screenshotPath;
+					screenshotLink = "file:///" + screenshotPath;
 					ActionKeywords.closeBrowser();
-					
-					//log-pass status
+
+					// log-pass status
 					Test.log(LogStatus.PASS, "Passssss");
-					
+
 					// report with snapshot
 					String img = Test.addScreenCapture(screenshotPath);
-					Test.log(LogStatus.INFO, "Snapshot Attached"+img);
-				    
+					Test.log(LogStatus.INFO, "Snapshot Attached" + img);
+
 					// writing everything to document
 					extent.flush();
-					
+
 					break;
 				}
 			}

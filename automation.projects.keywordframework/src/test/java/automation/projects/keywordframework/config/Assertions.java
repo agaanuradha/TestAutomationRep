@@ -3,7 +3,12 @@ package automation.projects.keywordframework.config;
 
 import automation.projects.keywordframework.utility.*;
 import automation.projects.keywordframework.config.*;
+
+import java.util.List;
+
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
 import automation.projects.keywordframework.*;
 
 public class Assertions 
@@ -14,7 +19,7 @@ public class Assertions
 		try
 		{
 			Log.info("Assertion: Validating that a specified value exists in a field");
-
+System.out.println("hello");
 			String Value = null;
 			ActionKeywords.driver.findElement(By.xpath(JsonUtils.readORJson(object))).click();
 			Value = ActionKeywords.driver.findElement(By.xpath(JsonUtils.readORJson(object))).getText();
@@ -34,7 +39,54 @@ public class Assertions
 			DriverScript.bAssertResult = false;
 		}
 	}
+	
+	public static void assert_EmptyTable(String object, String data)
 
+	{
+		try
+		{
+		Log.info("Assertion: Validating that a table contains no row");
+		WebElement table_transactions=ActionKeywords.driver.findElement(By.xpath(JsonUtils.readORJson(object)));
+		List<WebElement> rows_transactions = table_transactions.findElements(By.tagName("tr"));		
+		if (rows_transactions.size()==0)
+		{
+			DriverScript.bAssertResult = true;
+		}
+		else 
+		{
+			DriverScript.bAssertResult = false;
+		}
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to Validate table "+ data + " in Webelement " +object+ " --- " + e.getMessage());
+			DriverScript.bAssertResult = false;
+		}
+	}
+	
+	public static void assert_Table(String object, String data)
+
+	{
+		try
+		{
+		Log.info("Assertion: Validating that a table contains no row");
+		WebElement table_transactions=ActionKeywords.driver.findElement(By.xpath(JsonUtils.readORJson(object)));
+		List<WebElement> rows_transactions = table_transactions.findElements(By.tagName("tr"));		
+		if (rows_transactions.size()> 0)
+		{
+			DriverScript.bAssertResult = true;
+		}
+		else 
+		{
+			DriverScript.bAssertResult = false;
+		}
+		}
+		catch(Exception e)
+		{
+			Log.info("Not able to Validate table "+ data + " in Webelement " +object+ " --- " + e.getMessage());
+			DriverScript.bAssertResult = false;
+		}
+	}
 	public static void assert_isAutoFilled(String object, String data)
 	{
 		try

@@ -28,7 +28,7 @@ public class GeneralUtils
 		{
 			captureNum = captureNum + 1;
 			ErrorScreenshot = Constants.Path_ErrorScreenshots+ "Error_"+ captureNum  + ".png";
-			//System.out.println(ActionKeywords.driver.getTitle());
+			System.out.println(ActionKeywords.driver.getTitle());
 			File srcFile = ((TakesScreenshot)ActionKeywords.driver).getScreenshotAs(OutputType.FILE);
 			FileUtils.copyFile(srcFile, new File(ErrorScreenshot));
 		}
